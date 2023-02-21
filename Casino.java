@@ -20,7 +20,11 @@ public class Casino {
         else if (num == 2)
             playPoker();
         else if (num == 3)
+        try{
             playSlots();
+        }catch(InterruptedException e){
+            e.printStackTrace();
+        }
 
     }
 
