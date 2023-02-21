@@ -1,6 +1,16 @@
+/**
+ * Attributes:
+ * balance: the current balance of dollars in the specified bank account
+ * salary: the DAILY salary of the bank account
+ * Methods:
+ * Constructor: set initial balance and salary
+ * withdraw: add a balance to the wallet and remove from the bank
+ * interestPerDay: calculates and adds the interest after sleeping each day
+ * getters and setters for balance and salary:
+ */
 public class Bank {
     private double balance;
-    double salary;
+    private double salary;
 
     /**
      * constructor for the Bank class

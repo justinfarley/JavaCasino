@@ -27,10 +27,9 @@ public class Main {
         int day = 1;
         String[] morningSentencePool = { "What a beautiful morning! Time to put on a smile!", "", "" };
         HashMap<Integer, String[]> scientistQuestions = new HashMap<Integer, String[]>(); // String array is the
-                                                                                          // question
         HashMap<Integer, String[]> salesQuestions = new HashMap<Integer, String[]>(); // String array is the question
         HashMap<Integer, String[]> doctorQuestions = new HashMap<Integer, String[]>(); // String array is the question
-                                                                                       // and the 4 options
+        HashMap<Job, HashMap<Integer, String[]>> currentJobQuestions = new HashMap<Job, HashMap<Integer, String[]>>();                                                                               // and the 4 options
         // ask chatgpt Give me a list of 20 questions of moderate difficulty that only
         // scientists could answer in 4 answer multiple choice format
         // ask chatgpt Give me a list of 20 questions of moderate difficulty that
@@ -41,8 +40,15 @@ public class Main {
         Bank playerBank = new Bank(0, 0);
         Casino casino = new Casino();
         Random r = new Random();
-
+        //initialization
+        //fill all jobs
         fillScientistQuestions(scientistQuestions);
+        //fill currentJobQuestions
+        currentJobQuestions.put(Job.Doctor, doctorQuestions);
+        currentJobQuestions.put(Job.Scientist, scientistQuestions);
+        currentJobQuestions.put(Job.SalesAssociate, salesQuestions);
+
+
         System.out.println("Welcome to the Java Gambling simulator!");
         waitForSeconds(2000);
         System.out.print("Enter amount for deposit: ");
@@ -100,12 +106,17 @@ public class Main {
             case "Tuesday":
             case "Wednesday":
             case "Thursday":
-            case "Sunday":
+            case "Friday":
                 System.out.println("Time to go to work!");
                 waitForSeconds(1000);
-                GoToJob(job, scientistQuestions, playerBank, playerWallet);
+                GoToJob(job, currentJobQuestions.get(job), playerBank, playerWallet);
             default:
                 // skip job, go casino or wtv is after
+                System.out.println("Since it's a " + getDay(day) + ", you don't need to work! Hooray!");
+                waitForSeconds(2000);
+                System.out.println("What would you like to do instead?");
+                waitForSeconds(1000);
+                //stuff to do idk yet
         }
 
         System.out.println("It's time for your daily gambling session!");
@@ -114,7 +125,7 @@ public class Main {
 
         kb.close();
 
-    }
+    }//end of main
 
     static void GoToJob(Job job, HashMap<Integer, String[]> questionList, Bank playerBank, Wallet playerWallet) {
         Random r = new Random();
@@ -149,8 +160,6 @@ public class Main {
                 break;
             case Doctor:
                 break;
-            default:
-                // if no job.....
         }
     }
 
