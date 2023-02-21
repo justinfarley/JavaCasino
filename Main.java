@@ -29,7 +29,10 @@ public class Main {
         HashMap<Integer, String[]> scientistQuestions = new HashMap<Integer, String[]>(); // String array is the
         HashMap<Integer, String[]> salesQuestions = new HashMap<Integer, String[]>(); // String array is the question
         HashMap<Integer, String[]> doctorQuestions = new HashMap<Integer, String[]>(); // String array is the question
-        HashMap<Job, HashMap<Integer, String[]>> currentJobQuestions = new HashMap<Job, HashMap<Integer, String[]>>();                                                                               // and the 4 options
+        HashMap<Job, HashMap<Integer, String[]>> currentJobQuestions = new HashMap<Job, HashMap<Integer, String[]>>(); // and
+                                                                                                                       // the
+                                                                                                                       // 4
+                                                                                                                       // options
         // ask chatgpt Give me a list of 20 questions of moderate difficulty that only
         // scientists could answer in 4 answer multiple choice format
         // ask chatgpt Give me a list of 20 questions of moderate difficulty that
@@ -40,14 +43,13 @@ public class Main {
         Bank playerBank = new Bank(0, 0);
         Casino casino = new Casino();
         Random r = new Random();
-        //initialization
-        //fill all jobs
+        // initialization
+        // fill all jobs
         fillScientistQuestions(scientistQuestions);
-        //fill currentJobQuestions
+        // fill currentJobQuestions
         currentJobQuestions.put(Job.Doctor, doctorQuestions);
         currentJobQuestions.put(Job.Scientist, scientistQuestions);
         currentJobQuestions.put(Job.SalesAssociate, salesQuestions);
-
 
         System.out.println("Welcome to the Java Gambling simulator!");
         waitForSeconds(2000);
@@ -74,17 +76,20 @@ public class Main {
             case 1:
                 job = Job.Doctor;
                 System.out.println("Congratulations on your new job as a Doctor! Your job difficulty is 50/100!");
+                waitForSeconds(1000);
                 playerBank.setSalary(5000);
                 break;
             case 2:
                 job = Job.SalesAssociate;
                 System.out.println(
                         "Congratulations on your new job as a Sales Associate! Your job difficulty is 10/100!");
+                waitForSeconds(1000);
                 playerBank.setSalary(1000);
                 break;
             case 3:
                 job = Job.Scientist;
                 System.out.println("Congratulations on your new job as a Scientist! Your job difficulty is 25/100!");
+                waitForSeconds(1000);
                 playerBank.setSalary(2500);
                 break;
             default:
@@ -94,8 +99,8 @@ public class Main {
         waitForSeconds(1000);
         System.out.println("Day " + day + ", a " + getDay(day) + " morning . . .");
         for (int i = 0; i < 5; i++) {
-            System.out.println("-----");
             waitForSeconds(1000);
+            System.out.println("-----");
         }
         int rand = r.nextInt(morningSentencePool.length);
         // if day mod 5 == 0 its friday... etc. maybe make personalized messages for
@@ -116,7 +121,7 @@ public class Main {
                 waitForSeconds(2000);
                 System.out.println("What would you like to do instead?");
                 waitForSeconds(1000);
-                //stuff to do idk yet
+                // stuff to do idk yet
         }
 
         System.out.println("It's time for your daily gambling session!");
@@ -125,7 +130,7 @@ public class Main {
 
         kb.close();
 
-    }//end of main
+    }// end of main
 
     static void GoToJob(Job job, HashMap<Integer, String[]> questionList, Bank playerBank, Wallet playerWallet) {
         Random r = new Random();

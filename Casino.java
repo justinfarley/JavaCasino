@@ -91,6 +91,7 @@ public class Casino {
      */
     void playPoker() {
         String[] cards = cardsInit();
+        System.out.println(getCardSuit(cards[1]));
         /**
          * ask user to bet, input validate etc,
          * after successful bet, give the user 2 random cards
