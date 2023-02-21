@@ -82,7 +82,7 @@ public class Casino {
          * if both are over 21, get money back
          * if cpu goes over and you dont you win 2x money
          * dealer repeatedly hits until bust or over equal 17
-         * if uesr gets 21, display a special message celebreating their blackjack
+         * if user gets 21, display a special message celebreating their blackjack
          */
     }
 
@@ -153,5 +153,30 @@ public class Casino {
          *  
          *  will change when we test
          */
+    }
+    /**
+     * 
+     * determines the suit of a certain card
+     * 
+     * @param card the card input to be read: must be in format "KoD" or "10oH"
+     * @return the suit of the card parameter in the form "Spade", "Diamond", etc.
+     */
+    String getCardSuit(String card){
+        String suit = card.substring(card.length() - 1).toLowerCase();
+        if(suit.equals("d")){
+            return "Diamond";
+        }
+        else if(suit.equals("h")){
+            return "Heart";
+        }
+        else if(suit.equals("c")){
+            return "Club";
+        }
+        else if(suit.equals("s")){
+            return "Spade";
+        }
+        else{
+            return null;
+        }
     }
 }
