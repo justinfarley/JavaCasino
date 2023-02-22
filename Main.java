@@ -50,7 +50,6 @@ public class Main {
         currentJobQuestions.put(Job.Doctor, doctorQuestions);
         currentJobQuestions.put(Job.Scientist, scientistQuestions);
         currentJobQuestions.put(Job.SalesAssociate, salesQuestions);
-
         System.out.println("Welcome to the Java Gambling simulator!");
         waitForSeconds(2000);
         System.out.print("Enter amount for deposit: ");
@@ -63,6 +62,7 @@ public class Main {
         } while (deposit < 100 || deposit > 10000);
 
         Wallet playerWallet = new Wallet(deposit);
+        casino.inputGame(playerBank, playerWallet);
         System.out.println(
                 "Pick a job you would like to do: \n1. Doctor\n2. Sales Associate\n3. Scientist\nPlease enter a number for the corresponding job:");
         int val = kb.nextInt();
@@ -126,7 +126,7 @@ public class Main {
 
         System.out.println("It's time for your daily gambling session!");
         // in casino
-        casino.inputGame();
+        casino.inputGame(playerBank, playerWallet);
 
         kb.close();
 
@@ -136,35 +136,26 @@ public class Main {
         Random r = new Random();
         Scanner scan = new Scanner(System.in);
         int rand = r.nextInt(questionList.size());
-        switch (job) {
-            case Scientist:
-                // print question and options
-                for (int i = 0; i < questionList.get(rand).length - 1; i++) {
-                    System.out.println(questionList.get(rand)[i]);
-                    waitForSeconds(1000);
-                }
-                System.out.print("Please enter the corresponding answer: ");
-                int guess = scan.nextInt();
-                if (checkAnswer(guess, questionList.get(rand)[questionList.get(rand).length - 1])) {
-                    playerBank.addBalance(playerBank.getSalary());
-                    System.out.println(
-                            "Correct! Your salary for today has been paid!\n+$" + playerBank.getSalary() + " dollars!");
-                    waitForSeconds(2500);
-                    System.out.println("Your new bank balance is: $" + playerBank.getBalance() + " and you have $"
-                            + playerWallet.getBalance() + " on hand");
-                    waitForSeconds(2500);
-                } else {
-                    System.out.println("OOPS! Wrong answer.");
-                    waitForSeconds(2500);
-                    System.out.println("Your bank balance is: $" + playerBank.getBalance() + " and you have $"
-                            + playerWallet.getBalance() + " on hand");
-                    waitForSeconds(2500);
-                }
-                break;
-            case SalesAssociate:
-                break;
-            case Doctor:
-                break;
+        for (int i = 0; i < questionList.get(rand).length - 1; i++) {
+            System.out.println(questionList.get(rand)[i]);
+            waitForSeconds(1000);
+        }
+        System.out.print("Please enter the corresponding answer: ");
+        int guess = scan.nextInt();
+        if (checkAnswer(guess, questionList.get(rand)[questionList.get(rand).length - 1])) {
+            playerBank.addBalance(playerBank.getSalary());
+            System.out.println(
+                    "Correct! Your salary for today has been paid!\n+$" + playerBank.getSalary() + " dollars!");
+            waitForSeconds(2500);
+            System.out.println("Your new bank balance is: $" + playerBank.getBalance() + " and you have $"
+                    + playerWallet.getBalance() + " on hand");
+            waitForSeconds(2500);
+        } else {
+            System.out.println("OOPS! Wrong answer.");
+            waitForSeconds(2500);
+            System.out.println("Your bank balance is: $" + playerBank.getBalance() + " and you have $"
+                    + playerWallet.getBalance() + " on hand");
+            waitForSeconds(2500);
         }
     }
 
@@ -248,7 +239,7 @@ public class Main {
         try {
             Thread.sleep(milliseconds);
         } catch (InterruptedException e) {
-            System.out.println("LLLLL");
+            System.out.println("IException");
         }
     }
 
