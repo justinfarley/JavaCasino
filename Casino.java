@@ -79,7 +79,28 @@ public class Casino {
          * dealer repeatedly hits until bust or over equal 17
          * if user gets 21, display a special message celebreating their blackjack
          */
+        Random rand = new Random();
+        int card1, card2 = cardsInit(rand(1,53));
+        Player one = new player(card1, card2);
+        Player two = new player(card1, card2);
+        System.out.println("Your cards are " + card1 + " "  + card2); 
+        System.out.println("The computer cards are " + card1 + " "  + card2); 
+
+        int sum = 0; 
+        if(one.card1 + one.card2 == 21)
+            System.out.println("Congratulations, you have blackjack");
+        else if(one.card1 + one.card2 == 21 && two.card1 + two.card2 == 21);
+            System.out.println("You have blackjack, but so does player2 ");
+        if(two.cards1 + two.cards2 <= 17)
+            hits(two);
+
     }
+        void hits() { 
+            // adds card to the user or player deck
+            int cardNext = cardsInit(rand(1,53));
+            
+        }
+
 
     /**
      * game loop for poker being played in the console
