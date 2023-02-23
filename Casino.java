@@ -1,5 +1,7 @@
 import java.util.*;
 
+import javax.management.loading.MLet;
+
 public class Casino {
     /**
      * input for user to decide which game they want to play
@@ -150,20 +152,20 @@ public class Casino {
         pot.add(cards[rand]);
 
         // START GAME
-
+        // #region prompts
         System.out.println("Welcome to Poker!");
         Thread.sleep(1000);
 
         System.out.print("Enter the amount of money you would like to bet: ");
         double betAmount = scan.nextDouble();
-        
-        while(betAmount > wallet.getBalance()){
+
+        while (betAmount > wallet.getBalance()) {
             System.out.println("OOPS! You don't have that much money in your wallet!");
             Thread.sleep(1000);
-            if(betAmount <= bank.getBalance()){
+            if (betAmount <= bank.getBalance()) {
                 System.out.println("Would you like to use money from your bank instead? (y/n)");
                 char ans = scan.next().charAt(0);
-                if(ans == 'y'){
+                if (ans == 'y') {
                     bank.addBalance(-betAmount);
                 }
             }
@@ -173,9 +175,6 @@ public class Casino {
         }
         System.out.println("You have successfully bet $" + betAmount + "!");
         Thread.sleep(1000);
-
-
-
 
         System.out.print("Your cards are ");
         for (int i = 0; i < 3; i++) {
@@ -196,7 +195,7 @@ public class Casino {
         System.out.println();
         System.out.print("\n----------------------------------------\n");
 
-        //display first 3 cards only
+        // display first 3 cards only
         for (int i = 0; i < 2; i++) {
             System.out.print(cardName(pot.get(i)) + ", ");
             Thread.sleep(1000);
@@ -207,16 +206,16 @@ public class Casino {
 
         System.out.println("Would you like to raise? (y/n)");
         char ans = scan.next().charAt(0);
-        if(ans == 'y'){
+        if (ans == 'y') {
             System.out.print("How much do you want to raise by? ");
             double raiseAmount = scan.nextDouble();
-            while(raiseAmount > wallet.getBalance()){
+            while (raiseAmount > wallet.getBalance()) {
                 System.out.println("OOPS! You don't have that much money in your wallet!");
                 Thread.sleep(1000);
-                if(raiseAmount <= bank.getBalance()){
+                if (raiseAmount <= bank.getBalance()) {
                     System.out.println("Would you like to use money from your bank instead? (y/n)");
                     ans = scan.next().charAt(0);
-                    if(ans == 'y'){
+                    if (ans == 'y') {
                         bank.addBalance(-raiseAmount);
                     }
                 }
@@ -225,10 +224,102 @@ public class Casino {
                 raiseAmount = scan.nextDouble();
             }
             System.out.println("You have successfully raised by another $" + raiseAmount);
+            betAmount += raiseAmount;
+            // show one more card, ask for raise again
+            System.out.println("Okay! Here is the next card: ");
+            for (int i = 0; i < 3; i++) {
+                System.out.print(cardName(pot.get(i)) + ", ");
+                Thread.sleep(1000);
+            }
+            System.out.println(cardName(pot.get(3)));
+            Thread.sleep(1000);
+            System.out.println("Would you like to raise? (y/n)");
+            ans = scan.next().charAt(0);
+            if (ans == 'y') {
+                System.out.print("How much do you want to raise by? ");
+                raiseAmount = scan.nextDouble();
+                while (raiseAmount > wallet.getBalance()) {
+                    System.out.println("OOPS! You don't have that much money in your wallet!");
+                    Thread.sleep(1000);
+                    if (raiseAmount <= bank.getBalance()) {
+                        System.out.println("Would you like to use money from your bank instead? (y/n)");
+                        ans = scan.next().charAt(0);
+                        if (ans == 'y') {
+                            bank.addBalance(-raiseAmount);
+                        }
+                    }
+                    Thread.sleep(1000);
+                    System.out.println("Please enter a lower amount that you can afford: ");
+                    raiseAmount = scan.nextDouble();
+                }
+                System.out.println("You have successfully raised by another $" + raiseAmount);
+                betAmount += raiseAmount;
+                // show one more card, ask for raise again
+                System.out.println("Okay! Here is the next card: ");
+                for (int i = 0; i < 4; i++) {
+                    System.out.print(cardName(pot.get(i)) + ", ");
+                    Thread.sleep(1000);
+                }
+                System.out.println(cardName(pot.get(4)));
+                Thread.sleep(1000);
+            }
+
+        } else {
+            // show last 2 cards
+            System.out.println("Okay! Here are all 5 cards: ");
+            for (int i = 0; i < 4; i++) {
+                System.out.print(cardName(pot.get(i)) + ", ");
+                Thread.sleep(1000);
+            }
+            System.out.println(cardName(pot.get(4)));
+            Thread.sleep(1000);
         }
-
-
-
+        // #endregion prompts
+        String result = pokerCalculations(card1, card2, pot);
+        switch (result.toLowerCase()) {
+            case "onepair":
+                System.out.println("You got a One Pair! Thats a 1.5x multiplier win! GG!");
+                win(1.5, betAmount, wallet, bank);
+                break;
+            case "twopair":
+                System.out.println("You got a Two Pair! Thats a 2x multiplier win! GG!");
+                win(2, betAmount, wallet, bank);
+                break;
+            case "threeofakind":
+                System.out.println("You got a Three of a Kind! Thats a 3x multiplier win! GG!");
+                win(3, betAmount, wallet, bank);
+                break;
+            case "fourofakind":
+                System.out.println("You got a FOUR OF A KIND!! Thats a WHOPPING 10x multiplier win! GG!");
+                win(10, betAmount, wallet, bank);
+                break;
+            case "straight":
+                System.out.println("You got a Straight! Thats a 3.5x multiplier win! GG!");
+                win(3.5, betAmount, wallet, bank);
+                break;
+            case "flush":
+                System.out.println("You got a Flush! Thats a 3.5x multiplier win! GG!");
+                win(3.5, betAmount, wallet, bank);
+                break;
+            case "straightflush":
+                System.out.println("You got a STRAIGHT FLUSH! WOW! Thats a HUGE 25x MULTIPLIER WIN! GG!");
+                win(25, betAmount, wallet, bank);
+                break;
+            case "fullhouse":
+                System.out.println("You got a FULL HOUSE! Thats a 5x multiplier win!");
+                win(5, betAmount, wallet, bank);
+                break;
+            case "royalflush":
+                System.out.println(
+                        "WOW!!! YOU GOT A ROYAL FLUSH!!! GG!!!!!!!!!! THATS AN INSANE 10000x WIN! CONGRATULATIONS!");
+                win(10000, betAmount, wallet, bank);
+                break;
+            default:
+                System.out.println("You got nothing but a high card. Better luck next time");
+                win(0, betAmount, wallet, bank);
+                break;
+        }
+        // do calculations
     }// end of poker method
 
     /**
@@ -289,9 +380,25 @@ public class Casino {
             return null;
         }
     }
+
+    int getCardNum(String card) {
+        if (card.substring(0, 2).equals("10")) {
+            return 10;
+        } else if (card.substring(0, 1).equals("J")) {
+            return 11;
+        } else if (card.substring(0, 1).equals("Q")) {
+            return 12;
+        } else if (card.substring(0, 1).equals("K")) {
+            return 13;
+        } else {
+            return Integer.parseInt(card.substring(0, 1));
+        }
+    }
+
     /**
      * contains() function for arrays (since its not built in)
-     * @param arr the array to search
+     * 
+     * @param arr    the array to search
      * @param search the item to search for
      * @return true or false depending on if the item was found or not
      */
@@ -307,7 +414,8 @@ public class Casino {
     /**
      * 
      * @param card the card to get the name of
-     * @return full string of the cards name, ex "10 of Hearts", or "Ace of Clubs", or "King of Spades"
+     * @return full string of the cards name, ex "10 of Hearts", or "Ace of Clubs",
+     *         or "King of Spades"
      */
     String cardName(String card) {
         // input is "KoS"
@@ -348,5 +456,174 @@ public class Casino {
         cardName += getCardSuit(card);
         return cardName;
 
+    }
+
+    /**
+     * calculates what type of hand you have on the poker chart
+     * 
+     * @param pc1  the first card in the players hand
+     * @param pc2  the seconds card in the players hand
+     * @param pot1 the first card in the center
+     * @param pot2 the second card in the center
+     * @param pot3 the third card in the center
+     * @param pot4 the fourth card in the center
+     * @param pot5 the fifth card in the center
+     * @return a string with the poker hand name. etc: OnePair, TwoPair,
+     *         ThreeOfAKind, FourOfAKind, Straight, Flush, StraightFlush, FullHouse,
+     *         RoyalFlush
+     */
+    String pokerCalculations(String pc1, String pc2, ArrayList<String> pot) {
+        String result = "";
+        int pc1Num = getCardNum(pc1);
+        int pc2Num = getCardNum(pc2);
+        HashMap<Integer, Integer> pairSet = new HashMap<Integer, Integer>();
+        /*
+         * 
+         * 
+         * 
+         * 
+         */
+
+        // #region check_pairs
+        pairSet.put(pc1Num, 0);
+        pairSet.put(pc2Num, 0);
+        for (int i = 0; i < 5; i++) {
+            if (pc1Num == getCardNum(pot.get(i))) {
+                if (pairSet.containsKey(pc1Num))
+                    pairSet.put(pc1Num, pairSet.get(pc1Num) + 1); // increment
+                else
+                    pairSet.put(pc1Num, 1);
+            }
+            if (pc2Num == getCardNum(pot.get(i))) {
+                if (pairSet.containsKey(pc2Num))
+                    pairSet.put(pc2Num, pairSet.get(pc2Num) + 1); // increment
+                else
+                    pairSet.put(pc2Num, 1);
+            }
+        }
+        switch (pairSet.get(pc1Num)) {
+            case 1:
+                result = "OnePair";
+                break;
+            case 2:
+                result = "ThreeOfAKind";
+                break;
+            case 3:
+                result = "FourOfAKind";
+                break;
+        }
+        switch (pairSet.get(pc2Num)) {
+            case 1:
+                if (!result.equals("ThreeOfAKind") && !result.equals("FourOfAKind"))
+                    result = "OnePair";
+                break;
+            case 2:
+                if (!result.equals("FourOfAKind"))
+                    result = "ThreeOfAKind";
+                break;
+            case 3:
+                result = "FourOfAKind";
+                break;
+        }
+        // #endregion check_pairs
+        // #region check_straight
+        int numsInRow = 1;
+        HashMap<String, Integer> straightFlushCount = new HashMap<String, Integer>();
+
+        straightFlushCount.put(getCardSuit(pc1), 1);
+        straightFlushCount.put(getCardSuit(pc2), 1);
+        for (int i = 0; i < 5; i++) {
+            if (straightFlushCount.containsKey(getCardSuit(pot.get(i)))) {
+                straightFlushCount.put(getCardSuit(pot.get(i)), straightFlushCount.get(getCardSuit(pot.get(i))) + 1);
+            } else {
+                straightFlushCount.put(getCardSuit(pot.get(i)), 1);
+            }
+        }
+
+        if (pc1Num - numsInRow == pc2Num) {
+            //before increment check if pc1Num PLUS 1 is on the board
+            int temp = numsInRow;
+            for(int i = 0; i < 5; i++){
+                if(pc1Num + numsInRow == getCardNum(pot.get(i))){
+                    numsInRow++;
+                    break;
+                }
+            }
+            if(temp == numsInRow){
+                numsInRow++;
+            }
+        }
+        if (pc1Num + numsInRow == pc2Num) {
+            int temp = numsInRow;
+            for(int i = 0; i < 5; i++){
+                if(pc1Num - numsInRow == getCardNum(pot.get(i))){
+                    numsInRow++;
+                    break;
+                }
+            }
+            if(temp == numsInRow){
+                numsInRow++;
+            }
+        }
+        for (int i = 0; i < 5; i++) {
+            if (pc1Num - numsInRow == getCardNum(pot.get(i))) {
+                numsInRow++;
+            } else if (pc1Num - numsInRow == getCardNum(pot.get(i))) {
+                numsInRow++;
+            }
+        }
+        if (numsInRow >= 5) {
+            result = "Straight";
+        }
+        // #endregion check_straight
+        // #region check_flush
+
+        HashMap<String, Integer> suitCounts = new HashMap<String, Integer>();
+        suitCounts.put(getCardSuit(pc1), 1);
+        if (!suitCounts.containsKey(getCardSuit(pc2))) {
+            suitCounts.put(getCardSuit(pc2), 1);
+        } else {
+            suitCounts.put(getCardSuit(pc2), suitCounts.get(getCardSuit(pc2)) + 1);
+        }
+        for (int i = 0; i < 5; i++) {
+            if (!suitCounts.containsKey(getCardSuit(pot.get(i)))) {
+                suitCounts.put(getCardSuit(pot.get(i)), 1);
+            } else {
+                suitCounts.put(getCardSuit(pot.get(i)), suitCounts.get(getCardSuit(pot.get(i))) + 1);
+            }
+        }
+        if ((suitCounts.containsKey("Hearts") && suitCounts.get("Hearts") >= 5)
+                || (suitCounts.containsKey("Spades") && suitCounts.get("Spades") >= 5)
+                || (suitCounts.containsKey("Diamonds") && suitCounts.get("Diamonds") >= 5)
+                || (suitCounts.containsKey("Clubs") && suitCounts.get("Clubs") >= 5)) {
+            result = "Flush";
+        }
+
+        // #endregion check_flush
+
+        // #region check_fullHouse
+
+        // #endregion check_fullHouse
+
+        // #region check_straightFlush
+        if (numsInRow >= 5) {
+            if (straightFlushCount.get("Hearts") >= 5 || straightFlushCount.get("Diamonds") >= 5
+                    || straightFlushCount.get("Spades") >= 5 || straightFlushCount.get("Clubs") >= 5) {
+                result = "StraightFlush";
+            }
+        }
+        // #endregion check_straightFlush
+
+        System.out.println((pairSet.get(pc1Num) + pairSet.get(pc2Num)) + " pairs");
+        return result;
+    }
+
+    void win(double multiplier, double bet, Wallet wallet, Bank bank) {
+        if (multiplier != 0) {
+            double winnings = bet * multiplier + bet;
+            wallet.addBalance(winnings);
+        }
+        System.out.println("You now have a wallet balance of: $" + wallet.getBalance() + " and a balance of $"
+                + bank.getBalance() + " in your bank account.");
     }
 }
