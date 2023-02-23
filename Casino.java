@@ -67,7 +67,6 @@ public class Casino {
      * game loop for blackjack being played in the console
      */
     void playBlackJack() {
-        String[] cards = cardsInit();
         /**
          * randomly generate two set of cards(one for the user and one for the cpu) and
          * make sure they are not the same
@@ -81,29 +80,30 @@ public class Casino {
          * dealer repeatedly hits until bust or over equal 17
          * if user gets 21, display a special message celebreating their blackjack
          */
+        String[] cards = cardsInit();
         Random rand = new Random();
-        int card1, card2 = cardsInit(rand(1,53));
-        Player one = new player(card1, card2);
-        Player two = new player(card1, card2);
-        System.out.println("Your cards are " + card1 + " "  + card2); 
-        System.out.println("The computer cards are " + card1 + " "  + card2); 
-
-        int sum = 0; 
-        if(one.card1 + one.card2 == 21)
+        String card1, card2;
+        card1 = cards[rand.nextInt(1, 53)];
+        /*Player one = new Player(card1, card2);
+        Player two = new Player(card1, card2);
+        System.out.println("Your cards are " + card1 + " " + card2);
+        System.out.println("The computer cards are " + card1 + " " + card2);
+        int sum = 0;
+        if (one.card1 + one.card2 == 21)
             System.out.println("Congratulations, you have blackjack");
-        else if(one.card1 + one.card2 == 21 && two.card1 + two.card2 == 21);
-            System.out.println("You have blackjack, but so does player2 ");
-        if(two.cards1 + two.cards2 <= 17)
+        else if (one.card1 + one.card2 == 21 && two.card1 + two.card2 == 21)
+            ;
+        System.out.println("You have blackjack, but so does player2 ");
+        if (two.cards1 + two.cards2 <= 17)
             hits(two);
-
+*/
     }
-        void hits() { 
-            // adds card to the user or player deck
-            int cardNext = cardsInit(rand(1,53));
-            
-        }
-
-
+/*
+    void hits() {
+        // adds card to the user or player deck
+        int cardNext = cardsInit(rand(1, 53));
+    }
+    */
     /**
      * game loop for poker being played in the console
      */
@@ -204,7 +204,7 @@ public class Casino {
         }
         Thread.sleep(1000);
         System.out.print("\n----------------------------------------");
-        System.out.println("\n" + cardName(card1) + " AND " + cardName(card2));
+        System.out.println("\n" + getCardName(card1) + " AND " + getCardName(card2));
         System.out.print("----------------------------------------");
         Thread.sleep(1000);
         System.out.println();
@@ -218,10 +218,10 @@ public class Casino {
 
         // display first 3 cards only
         for (int i = 0; i < 2; i++) {
-            System.out.print(cardName(pot.get(i)) + ", ");
+            System.out.print(getCardName(pot.get(i)) + ", ");
             Thread.sleep(1000);
         }
-        System.out.println(cardName(pot.get(2)));
+        System.out.println(getCardName(pot.get(2)));
         System.out.print("----------------------------------------\n");
         Thread.sleep(1000);
 
@@ -249,10 +249,10 @@ public class Casino {
             // show one more card, ask for raise again
             System.out.println("Okay! Here is the next card: ");
             for (int i = 0; i < 3; i++) {
-                System.out.print(cardName(pot.get(i)) + ", ");
+                System.out.print(getCardName(pot.get(i)) + ", ");
                 Thread.sleep(1000);
             }
-            System.out.println(cardName(pot.get(3)));
+            System.out.println(getCardName(pot.get(3)));
             Thread.sleep(1000);
             System.out.println("Would you like to raise? (y/n)");
             ans = scan.next().charAt(0);
@@ -278,10 +278,10 @@ public class Casino {
                 // show one more card, ask for raise again
                 System.out.println("Okay! Here is the next card: ");
                 for (int i = 0; i < 4; i++) {
-                    System.out.print(cardName(pot.get(i)) + ", ");
+                    System.out.print(getCardName(pot.get(i)) + ", ");
                     Thread.sleep(1000);
                 }
-                System.out.println(cardName(pot.get(4)));
+                System.out.println(getCardName(pot.get(4)));
                 Thread.sleep(1000);
             }
 
@@ -289,10 +289,10 @@ public class Casino {
             // show last 2 cards
             System.out.println("Okay! Here are all 5 cards: ");
             for (int i = 0; i < 4; i++) {
-                System.out.print(cardName(pot.get(i)) + ", ");
+                System.out.print(getCardName(pot.get(i)) + ", ");
                 Thread.sleep(1000);
             }
-            System.out.println(cardName(pot.get(4)));
+            System.out.println(getCardName(pot.get(4)));
             Thread.sleep(1000);
         }
         // #endregion prompts
@@ -438,7 +438,7 @@ public class Casino {
      * @return full string of the cards name, ex "10 of Hearts", or "Ace of Clubs",
      *         or "King of Spades"
      */
-    String cardName(String card) {
+    String getCardName(String card) {
         // input is "KoS"
         String cardName = "";
         String cardNum = card.substring(0, 1);
@@ -562,27 +562,27 @@ public class Casino {
         }
 
         if (pc1Num - numsInRow == pc2Num) {
-            //before increment check if pc1Num PLUS 1 is on the board
+            // before increment check if pc1Num PLUS 1 is on the board
             int temp = numsInRow;
-            for(int i = 0; i < 5; i++){
-                if(pc1Num + numsInRow == getCardNum(pot.get(i))){
+            for (int i = 0; i < 5; i++) {
+                if (pc1Num + numsInRow == getCardNum(pot.get(i))) {
                     numsInRow++;
                     break;
                 }
             }
-            if(temp == numsInRow){
+            if (temp == numsInRow) {
                 numsInRow++;
             }
         }
         if (pc1Num + numsInRow == pc2Num) {
             int temp = numsInRow;
-            for(int i = 0; i < 5; i++){
-                if(pc1Num - numsInRow == getCardNum(pot.get(i))){
+            for (int i = 0; i < 5; i++) {
+                if (pc1Num - numsInRow == getCardNum(pot.get(i))) {
                     numsInRow++;
                     break;
                 }
             }
-            if(temp == numsInRow){
+            if (temp == numsInRow) {
                 numsInRow++;
             }
         }
@@ -634,15 +634,58 @@ public class Casino {
             }
         }
         // #endregion check_straightFlush
-
+        //#region check_royalFlush
+        HashMap<Integer, Boolean> isRoyalFlush = new HashMap<Integer, Boolean>();
+        String suit = "";
+        isRoyalFlush.put(1, false);
+        isRoyalFlush.put(10, false);
+        isRoyalFlush.put(11, false);
+        isRoyalFlush.put(12, false);
+        isRoyalFlush.put(13, false);
+        
+        if(pc1Num == 10 || pc1Num == 11 || pc1Num == 12 || pc1Num == 13 || pc1Num == 1){
+            suit = getCardSuit(pc1);
+            for(int i = 0; i < 5; i++){
+                int num = getCardNum(pot.get(i));
+                if(num == 10 || num == 11 || num == 12 || num == 13 || num == 1){
+                    isRoyalFlush.put(num, true);
+                }
+            }
+        }
+        if(pc2Num == 10 || pc2Num == 11 || pc2Num == 12 || pc2Num == 13 || pc2Num == 1){
+            suit = getCardName(pc2);
+            for(int i = 0; i < 5; i++){
+                int num = getCardNum(pot.get(i));
+                if(num == 10 || num == 11 || num == 12 || num == 13 || num == 1){
+                    isRoyalFlush.put(num, true);
+                }
+            }
+        }
+        boolean royalFlush = false;
+        if(isRoyalFlush.get(1) && isRoyalFlush.get(10) && isRoyalFlush.get(11) && isRoyalFlush.get(12) && isRoyalFlush.get(13)){
+            //check if all suits are the same
+            royalFlush = true;
+            for(int i = 0; i < 5; i++){
+                if(!getCardSuit(pot.get(i)).equals(suit)){
+                    royalFlush = false;
+                }
+            }
+        }
+        if(royalFlush){
+            result = "RoyalFlush";
+        }
+        //#endregion check_royalFlush
         System.out.println((pairSet.get(pc1Num) + pairSet.get(pc2Num)) + " pairs");
         return result;
     }
 
     void win(double multiplier, double bet, Wallet wallet, Bank bank) {
         if (multiplier != 0) {
-            double winnings = bet * multiplier + bet;
-            wallet.addBalance(winnings);
+            double winnings = bet * multiplier;
+            wallet.addBalance(winnings - bet);
+        }
+        else{
+            wallet.addBalance(-bet);
         }
         System.out.println("You now have a wallet balance of: $" + wallet.getBalance() + " and a balance of $"
                 + bank.getBalance() + " in your bank account.");
