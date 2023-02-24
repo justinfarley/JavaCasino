@@ -62,7 +62,6 @@ public class Main {
         } while (deposit < 100 || deposit > 10000);
 
         Wallet playerWallet = new Wallet(deposit);
-        casino.inputGame(playerBank, playerWallet);
         System.out.println(
                 "Pick a job you would like to do: \n1. Doctor\n2. Sales Associate\n3. Scientist\nPlease enter a number for the corresponding job:");
         int val = kb.nextInt();
@@ -103,8 +102,6 @@ public class Main {
             System.out.println("-----");
         }
         int rand = r.nextInt(morningSentencePool.length);
-        // if day mod 5 == 0 its friday... etc. maybe make personalized messages for
-        // each day
         System.out.println(morningSentencePool[rand]);
         switch (getDay(day)) {
             case "Monday":
@@ -128,6 +125,27 @@ public class Main {
         // in casino
         casino.inputGame(playerBank, playerWallet);
 
+        // bank trip
+        System.out.println("You decide to go to the bank.");
+        waitForSeconds(1000);
+        System.out.println("Would you like to: \n1. Withdraw\n2. Deposit\n3. Leave");
+        int ans = kb.nextInt();
+        while (ans != 1 && ans != 2 && ans != 3) {
+            System.out.print("choose a valid option: ");
+            ans = kb.nextInt();
+        }
+        switch (ans) {
+            case 1:
+                waitForSeconds(1000);
+                System.out.println("How much would you like to withdraw?");
+                double next = kb.nextDouble();
+                //input validation etc then display balances
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+        }
         kb.close();
 
     }// end of main
