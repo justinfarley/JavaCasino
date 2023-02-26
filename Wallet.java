@@ -33,4 +33,11 @@ public class Wallet {
         balance -= val;  // remove the amount from hand (from the wallet)
 
     }
+    /**
+     * used to set balance when loading data
+     * @param b amount to set to
+     */
+    void setBalance(double b){
+        balance = b;
+    }
 }

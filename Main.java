@@ -1,6 +1,7 @@
+import java.io.*;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.HashMap;
-import java.lang.Object.*;
 
 //add days:
 //  Certain number of actions per day
@@ -14,14 +15,20 @@ import java.lang.Object.*;
 //  when done gambling:
 //      
 enum Job {
-    NoJob, // difficulty: 0
-    Doctor, // difficulty: 50
-    SalesAssociate, // difficulty: 10
-    Scientist, // difficulty: 25
+    NoJob(1), // difficulty: 0
+    Doctor(2), // difficulty: 50
+    SalesAssociate(3), // difficulty: 10
+    Scientist(4); // difficulty: 25
+
+    final int IDENTIFIER;
+
+    Job(int i){
+        IDENTIFIER = i;
+    }
 }
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Scanner kb = new Scanner(System.in);
         double deposit;
         int day = 1;
@@ -39,10 +46,16 @@ public class Main {
         // only Sales Associates could answer in 4 answer multiple choice format
         // ask chatgpt Give me a list of 20 questions of moderate difficulty that only
         // doctors could answer in 4 answer multiple choice format
-        Job job;
+        Job job = Job.NoJob;
         Bank playerBank = new Bank(0, 0);
+        Wallet playerWallet;
         Casino casino = new Casino();
         Random r = new Random();
+        FileInputStream data = new FileInputStream("./JavaCasino/data.txt");
+        Data storedData = loadData(data);
+
+
+
         // initialization
         // fill all jobs
         fillScientistQuestions(scientistQuestions);
@@ -50,119 +63,178 @@ public class Main {
         currentJobQuestions.put(Job.Doctor, doctorQuestions);
         currentJobQuestions.put(Job.Scientist, scientistQuestions);
         currentJobQuestions.put(Job.SalesAssociate, salesQuestions);
-        System.out.println("Welcome to the Java Gambling simulator!");
-        waitForSeconds(2000);
-        System.out.print("Enter amount for deposit: ");
-        deposit = kb.nextDouble();
-        do {
-            if (deposit < 100 || deposit > 10000) {
-                System.out.println("Please enter a valid deposit: (100-10000)");
-                deposit = kb.nextDouble();
-            }
-        } while (deposit < 100 || deposit > 10000);
+        // if no file exists
+        if (data.available() <= 0) {
+            File newData = new File("./JavaCasino/data.txt");
+            PrintWriter writeData = new PrintWriter(newData);
 
-        Wallet playerWallet = new Wallet(deposit);
-        System.out.println(
-                "Pick a job you would like to do: \n1. Doctor\n2. Sales Associate\n3. Scientist\nPlease enter a number for the corresponding job:");
-        int val = kb.nextInt();
+            System.out.println("file not exist yet");
+            // maybe more later for now this is it
 
-        while (val != 1 && val != 2 && val != 3) {
-            System.out.print("Your number is not valid, enter 1,2, or 3 for the corresponding job: ");
-            val = kb.nextInt();
-        }
-        waitForSeconds(1000);
-        switch (val) {
+            System.out.println("Welcome to the Java Gambling simulator!");
+            waitForSeconds(2000);
+            System.out.print("Enter amount for deposit: ");
+            deposit = kb.nextDouble();
+            do {
+                if (deposit < 100 || deposit > 10000) {
+                    System.out.println("Please enter a valid deposit: (100-10000)");
+                    deposit = kb.nextDouble();
+                }
+            } while (deposit < 100 || deposit > 10000);
+            playerWallet = new Wallet(deposit);
+            writeData.println("BANK=" + deposit);
+            writeData.println("WALLET=0");
+            writeData.println("DAY=1");
+            writeData.println("JOB=0");
+            writeData.close();
+        } else {
+            System.out.println("file exist already");
+            playerWallet = new Wallet(0);
+        //#region assignData
+
+        day = storedData.day;
+        switch (storedData.job) {
             case 1:
-                job = Job.Doctor;
-                System.out.println("Congratulations on your new job as a Doctor! Your job difficulty is 50/100!");
-                waitForSeconds(1000);
-                playerBank.setSalary(5000);
-                break;
-            case 2:
-                job = Job.SalesAssociate;
-                System.out.println(
-                        "Congratulations on your new job as a Sales Associate! Your job difficulty is 10/100!");
-                waitForSeconds(1000);
-                playerBank.setSalary(1000);
-                break;
-            case 3:
-                job = Job.Scientist;
-                System.out.println("Congratulations on your new job as a Scientist! Your job difficulty is 25/100!");
-                waitForSeconds(1000);
-                playerBank.setSalary(2500);
-                break;
-            default:
                 job = Job.NoJob;
                 break;
-        }
-        waitForSeconds(1000);
-        System.out.println("Day " + day + ", a " + getDay(day) + " morning . . .");
-        for (int i = 0; i < 5; i++) {
-            waitForSeconds(1000);
-            System.out.println("-----");
-        }
-        int rand = r.nextInt(morningSentencePool.length);
-        System.out.println(morningSentencePool[rand]);
-        switch (getDay(day)) {
-            case "Monday":
-            case "Tuesday":
-            case "Wednesday":
-            case "Thursday":
-            case "Friday":
-                System.out.println("Time to go to work!");
-                waitForSeconds(1000);
-                GoToJob(job, currentJobQuestions.get(job), playerBank, playerWallet);
+                case 2:
+                job = Job.Doctor;
+                break;
+                case 3:
+                job = Job.SalesAssociate;
+                break;
+                case 4:
+                job = Job.Scientist;
+                break;
             default:
-                // skip job, go casino or wtv is after
-                System.out.println("Since it's a " + getDay(day) + ", you don't need to work! Hooray!");
-                waitForSeconds(2000);
-                System.out.println("What would you like to do instead?");
-                waitForSeconds(1000);
-                // stuff to do idk yet
+                break;
         }
+        playerWallet = new Wallet(storedData.walletBalance);
+        playerBank.setBalance(storedData.bankBalance);
 
-        System.out.println("It's time for your daily gambling session!");
-        // in casino
-        casino.inputGame(playerBank, playerWallet);
-
-        // bank trip
-        System.out.println("You decide to go to the bank.");
-        waitForSeconds(1000);
-        System.out.println("Would you like to: \n1. Withdraw\n2. Deposit\n3. Leave");
-        int ans = kb.nextInt();
-        while (ans != 1 && ans != 2 && ans != 3) {
-            System.out.print("choose a valid option: ");
-            ans = kb.nextInt();
+        //#endregion assignData
+            System.out.println("You have $" + playerBank.getBalance() + " in your bank account, and $"
+                    + playerWallet.getBalance() + " in your wallet");
         }
-        double next;
-        System.out.println("Current balances: \nBank: $" + playerBank.getBalance() + "\nWallet: $" + playerWallet.getBalance());
-        switch (ans) {
-            case 1:
+        while (day < 21) {
+            waitForSeconds(1000);
+            System.out.println("Day " + day + ", a " + getDay(day) + " morning . . .");
+            for (int i = 0; i < 5; i++) {
                 waitForSeconds(1000);
-                System.out.println("How much would you like to withdraw?");
-                next = kb.nextDouble();
-                // input validation etc then display balances
-                while (next > playerBank.getBalance() || next <= 0) {
-                    System.out.println("Enter a valid amount (min 0.01)\nYou have $" + playerBank.getBalance() + ": ");
-                    next = kb.nextDouble();
+                System.out.println("-----");
+            }
+            if (job == Job.NoJob) {
+                System.out.println("Oh no! It looks like you don't have a job! Try picking one now: ");
+                waitForSeconds(1000);
+                System.out.println(
+                        "Pick a job you would like to do: \n1. Doctor\n2. Sales Associate\n3. Scientist\nPlease enter a number for the corresponding job:");
+                int val = kb.nextInt();
+
+                while (val != 1 && val != 2 && val != 3) {
+                    System.out.print("Your number is not valid, enter 1,2, or 3 for the corresponding job: ");
+                    val = kb.nextInt();
                 }
-                playerBank.withdraw(next, playerWallet, playerBank);
-                break;
-            case 2:
-                waitForSeconds(1000);
-                System.out.println("How much would you like to deposit?");
-                next = kb.nextDouble();
-                while (next > playerWallet.getBalance() || next <= 0) {
-                    System.out
-                            .println("Enter a valid amount (min 0.01)\nYou have $" + playerWallet.getBalance() + ": ");
-                    next = kb.nextDouble();
+                switch (val) {
+                    case 1:
+                        job = Job.Doctor;
+                        System.out
+                                .println("Congratulations on your new job as a Doctor! Your job difficulty is 50/100!");
+                        waitForSeconds(1000);
+                        playerBank.setSalary(5000);
+                        break;
+                    case 2:
+                        job = Job.SalesAssociate;
+                        System.out.println(
+                                "Congratulations on your new job as a Sales Associate! Your job difficulty is 10/100!");
+                        waitForSeconds(1000);
+                        playerBank.setSalary(1000);
+                        break;
+                    case 3:
+                        job = Job.Scientist;
+                        System.out
+                                .println(
+                                        "Congratulations on your new job as a Scientist! Your job difficulty is 25/100!");
+                        waitForSeconds(1000);
+                        playerBank.setSalary(2500);
+                        break;
+                    default:
+                        job = Job.NoJob;
+                        break;
                 }
-                playerBank.deposit(next, playerWallet, playerBank);
-                break;
-            case 3:
-                waitForSeconds(1000);
-                System.out.println("Ok! Time to go home and go to bed.");
-                break;
+            }
+
+            int rand = r.nextInt(morningSentencePool.length);
+            System.out.println(morningSentencePool[rand]);
+            switch (getDay(day)) {
+                case "Monday":
+                case "Tuesday":
+                case "Wednesday":
+                case "Thursday":
+                case "Friday":
+                    System.out.println("Time to go to work!");
+                    waitForSeconds(1000);
+                    GoToJob(job, currentJobQuestions.get(job), playerBank, playerWallet);
+                default:
+                    // skip job, go casino or wtv is after
+                    System.out.println("Since it's a " + getDay(day) + ", you don't need to work! Hooray!");
+                    waitForSeconds(2000);
+                    System.out.println("What would you like to do instead?");
+                    waitForSeconds(1000);
+                    // stuff to do idk yet
+                    // maybe freelance,
+            }
+
+            System.out.println("It's time for your daily gambling session!");
+            // in casino
+            casino.inputGame(playerBank, playerWallet);
+
+            // bank trip
+            System.out.println("You decide to go to the bank.");
+            waitForSeconds(1000);
+            System.out.println("Would you like to: \n1. Withdraw\n2. Deposit\n3. Leave");
+            int ans = kb.nextInt();
+            while (ans != 1 && ans != 2 && ans != 3) {
+                System.out.print("choose a valid option: ");
+                ans = kb.nextInt();
+            }
+            double next;
+            System.out.println(
+                    "Current balances: \nBank: $" + playerBank.getBalance() + "\nWallet: $"
+                            + playerWallet.getBalance());
+            switch (ans) {
+                case 1:
+                    waitForSeconds(1000);
+                    System.out.println("How much would you like to withdraw?");
+                    next = kb.nextDouble();
+                    // input validation etc then display balances
+                    while (next > playerBank.getBalance() || next <= 0) {
+                        System.out.println(
+                                "Enter a valid amount (min 0.01)\nYou have $" + playerBank.getBalance() + ": ");
+                        next = kb.nextDouble();
+                    }
+                    playerBank.withdraw(next, playerWallet, playerBank);
+                    break;
+                case 2:
+                    waitForSeconds(1000);
+                    System.out.println("How much would you like to deposit?");
+                    next = kb.nextDouble();
+                    while (next > playerWallet.getBalance() || next <= 0) {
+                        System.out
+                                .println("Enter a valid amount (min 0.01)\nYou have $" + playerWallet.getBalance()
+                                        + ": ");
+                        next = kb.nextDouble();
+                    }
+                    playerBank.deposit(next, playerWallet, playerBank);
+                    break;
+                case 3:
+                    waitForSeconds(1000);
+                    System.out.println("Ok! Time to go home and go to bed.");
+                    break;
+            }
+            day++;
+            playerBank.interestPerDay();
+            saveData(playerWallet, playerBank, day, job.IDENTIFIER);
+            System.out.println("Progress Saved!");
         }
         kb.close();
 
@@ -279,4 +351,55 @@ public class Main {
         }
     }
 
+    static void saveData(Wallet wallet, Bank bank, int day, int job) throws IOException
+    {
+        File newData = new File("./JavaCasino/data.txt");
+        PrintWriter writeData = new PrintWriter(newData);
+
+        writeData.println("BANK=" + bank.getBalance());
+        writeData.println("WALLET=" + wallet.getBalance());
+        writeData.println("DAY=" + day);
+        writeData.println("JOB=" + job);
+        writeData.close();
+
+    }
+
+    static Data loadData(FileInputStream data) throws IOException {
+
+        int day = (int) getDataLine(data, "DAY");
+        int job = (int)getDataLine(data, "JOB");
+        double walletBal = getDataLine(data, "WALLET");
+        double bankBal = getDataLine(data, "BANK");
+        
+        return new Data(day, walletBal, bankBal, job);
+
+    }
+
+    /**
+     * Will get the value of the inputted attribute and return it AS A DOUBLE (even
+     * if its an int)
+     * 
+     * @param data      the file where data is saved
+     * @param attribute the attribute of the data to get. Attributes include: "DAY",
+     *                  "BANK", WALLET
+     */
+    static double getDataLine(FileInputStream data, String attribute) throws IOException {
+        data = new FileInputStream("./JavaCasino/data.txt");
+        Scanner dataScanner = new Scanner(data);
+        double value = 0.0;
+        if (!attribute.equals("DAY") && !attribute.equals("BANK") && !attribute.equals("WALLET") && !attribute.equals("JOB")) {
+            System.out.println("ERROR");
+            System.exit(404);
+        }
+        while (dataScanner.hasNext()) {
+            String nextLine = dataScanner.nextLine();
+            System.out.println(attribute);
+            if (nextLine.contains(attribute)) {
+                value = Double.parseDouble(nextLine.substring(nextLine.indexOf("=") + 1));
+                System.out.println(value + " VALUE");
+                return value;
+            }
+        }
+        return value;
+    }
 }

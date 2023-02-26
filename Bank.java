@@ -43,6 +43,13 @@ public class Bank {
     }
 
     /**
+     * used for loading saved data
+     * @param balance balance to set to
+     */
+    void setBalance(double b){
+        balance = b;
+    }
+    /**
      * Calculated interest each day is 0.002 times the current balance and it
      * immediately gets added back onto the balance
      */

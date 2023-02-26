@@ -145,29 +145,33 @@ public class Casino {
             rand = r.nextInt(1, cards.length - 1);
         }
         int card2Num = rand;
+        int temp2 = rand;
         String card1 = cards[card1Num];
         String card2 = cards[card2Num];
         System.out.println("______ " + card1 + "   " + card2);
         ArrayList<String> pot = new ArrayList<String>();
         rand = r.nextInt(1, cards.length - 1);
-        pot.add(cards[rand]);
-        temp = rand;
-        while (rand == temp) {
-            rand = r.nextInt(1, cards.length - 1);
-        }
-        pot.add(cards[rand]);
-        int temp2 = rand;
         while (rand == temp || rand == temp2) {
             rand = r.nextInt(1, cards.length - 1);
         }
         pot.add(cards[rand]);
+        int temp6 = rand;
+        while (rand == temp || rand == temp2 || rand == temp6) {
+            rand = r.nextInt(1, cards.length - 1);
+        }
+        pot.add(cards[rand]);
         int temp3 = rand;
-        while (rand == temp || rand == temp2 || rand == temp3) {
+        while (rand == temp || rand == temp2 || rand == temp3|| rand == temp6) {
             rand = r.nextInt(1, cards.length - 1);
         }
         pot.add(cards[rand]);
         int temp4 = rand;
-        while (rand == temp || rand == temp2 || rand == temp3 || rand == temp4) {
+        while (rand == temp || rand == temp2 || rand == temp3 || rand == temp4 || rand == temp6) {
+            rand = r.nextInt(1, cards.length - 1);
+        }
+        pot.add(cards[rand]);
+        int temp5 = rand;
+        while (rand == temp || rand == temp2 || rand == temp3 || rand == temp4 || rand == temp5) {
             rand = r.nextInt(1, cards.length - 1);
         }
         pot.add(cards[rand]);
