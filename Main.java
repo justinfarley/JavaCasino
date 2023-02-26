@@ -134,16 +134,34 @@ public class Main {
             System.out.print("choose a valid option: ");
             ans = kb.nextInt();
         }
+        double next;
+        System.out.println("Current balances: \nBank: $" + playerBank.getBalance() + "\nWallet: $" + playerWallet.getBalance());
         switch (ans) {
             case 1:
                 waitForSeconds(1000);
                 System.out.println("How much would you like to withdraw?");
-                double next = kb.nextDouble();
-                //input validation etc then display balances
+                next = kb.nextDouble();
+                // input validation etc then display balances
+                while (next > playerBank.getBalance() || next <= 0) {
+                    System.out.println("Enter a valid amount (min 0.01)\nYou have $" + playerBank.getBalance() + ": ");
+                    next = kb.nextDouble();
+                }
+                playerBank.withdraw(next, playerWallet, playerBank);
                 break;
             case 2:
+                waitForSeconds(1000);
+                System.out.println("How much would you like to deposit?");
+                next = kb.nextDouble();
+                while (next > playerWallet.getBalance() || next <= 0) {
+                    System.out
+                            .println("Enter a valid amount (min 0.01)\nYou have $" + playerWallet.getBalance() + ": ");
+                    next = kb.nextDouble();
+                }
+                playerBank.deposit(next, playerWallet, playerBank);
                 break;
             case 3:
+                waitForSeconds(1000);
+                System.out.println("Ok! Time to go home and go to bed.");
                 break;
         }
         kb.close();

@@ -28,9 +28,18 @@ public class Bank {
      * @param amount the amount to withdraw from the bank
      * @param wallet the wallet to put the withdrawal into
      */
-    void withdraw(double amount, Wallet wallet) {
+    void withdraw(double amount, Wallet wallet, Bank bank) {
         wallet.addBalance(amount);
         this.balance -= amount;
+        System.out.println("Successful withdraw! You now have:\nBank: $" + bank.getBalance() +"\nWallet: " + wallet.getBalance());
+    }
+
+    void deposit(double amount, Wallet wallet, Bank bank) {
+        if (wallet.getBalance() >= amount) {
+            balance += amount;
+            wallet.addBalance(-amount);
+            System.out.println("Successful deposit! You now have:\nBank: $" + bank.getBalance() +"\nWallet: " + wallet.getBalance());
+        }
     }
 
     /**
