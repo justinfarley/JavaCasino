@@ -56,7 +56,7 @@ public class Bank {
     void interestPerDay() {
         double interestVal = balance * 0.002;
         balance += interestVal;
-        System.out.println("Your balance has increased by: " + interestVal);
+        System.out.println("Your balance has increased by: $" + interestVal + " due to interest!");
 
     }
 

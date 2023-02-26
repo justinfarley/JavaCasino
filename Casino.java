@@ -84,26 +84,28 @@ public class Casino {
         Random rand = new Random();
         String card1, card2;
         card1 = cards[rand.nextInt(1, 53)];
-        /*Player one = new Player(card1, card2);
-        Player two = new Player(card1, card2);
-        System.out.println("Your cards are " + card1 + " " + card2);
-        System.out.println("The computer cards are " + card1 + " " + card2);
-        int sum = 0;
-        if (one.card1 + one.card2 == 21)
-            System.out.println("Congratulations, you have blackjack");
-        else if (one.card1 + one.card2 == 21 && two.card1 + two.card2 == 21)
-            ;
-        System.out.println("You have blackjack, but so does player2 ");
-        if (two.cards1 + two.cards2 <= 17)
-            hits(two);
-*/
+        /*
+         * Player one = new Player(card1, card2);
+         * Player two = new Player(card1, card2);
+         * System.out.println("Your cards are " + card1 + " " + card2);
+         * System.out.println("The computer cards are " + card1 + " " + card2);
+         * int sum = 0;
+         * if (one.card1 + one.card2 == 21)
+         * System.out.println("Congratulations, you have blackjack");
+         * else if (one.card1 + one.card2 == 21 && two.card1 + two.card2 == 21)
+         * ;
+         * System.out.println("You have blackjack, but so does player2 ");
+         * if (two.cards1 + two.cards2 <= 17)
+         * hits(two);
+         */
     }
-/*
-    void hits() {
-        // adds card to the user or player deck
-        int cardNext = cardsInit(rand(1, 53));
-    }
-    */
+
+    /*
+     * void hits() {
+     * // adds card to the user or player deck
+     * int cardNext = cardsInit(rand(1, 53));
+     * }
+     */
     /**
      * game loop for poker being played in the console
      */
@@ -136,6 +138,7 @@ public class Casino {
         Scanner scan = new Scanner(System.in);
         Random r = new Random();
         String[] cards = cardsInit();
+        boolean betFromBank = false;
         // if card is picked already, take it out of the pool
         int rand = r.nextInt(1, cards.length - 1);
         int temp = rand;
@@ -161,7 +164,7 @@ public class Casino {
         }
         pot.add(cards[rand]);
         int temp3 = rand;
-        while (rand == temp || rand == temp2 || rand == temp3|| rand == temp6) {
+        while (rand == temp || rand == temp2 || rand == temp3 || rand == temp6) {
             rand = r.nextInt(1, cards.length - 1);
         }
         pot.add(cards[rand]);
@@ -185,18 +188,21 @@ public class Casino {
         double betAmount = scan.nextDouble();
 
         while (betAmount > wallet.getBalance()) {
-            System.out.println("OOPS! You don't have that much money in your wallet!");
+            System.out.println("OOPS! You don't have that much money in your wallet! ($" + wallet.getBalance() + ")");
             Thread.sleep(1000);
             if (betAmount <= bank.getBalance()) {
-                System.out.println("Would you like to use money from your bank instead? (y/n)");
+                System.out.println(
+                        "Would you like to use money from your bank instead($ " + bank.getBalance() + ")? (y/n)");
                 char ans = scan.next().charAt(0);
                 if (ans == 'y') {
-                    bank.addBalance(-betAmount);
+                    betFromBank = true;
+                    break;
                 }
+            } else {
+                Thread.sleep(1000);
+                System.out.println("Please enter a lower amount that you can afford: ");
+                betAmount = scan.nextDouble();
             }
-            Thread.sleep(1000);
-            System.out.println("Please enter a lower amount that you can afford: ");
-            betAmount = scan.nextDouble();
         }
         System.out.println("You have successfully bet $" + betAmount + "!");
         Thread.sleep(1000);
@@ -241,12 +247,15 @@ public class Casino {
                     System.out.println("Would you like to use money from your bank instead? (y/n)");
                     ans = scan.next().charAt(0);
                     if (ans == 'y') {
-                        bank.addBalance(-raiseAmount);
+                        betFromBank = true;
+                        break;
                     }
                 }
+                else{
                 Thread.sleep(1000);
                 System.out.println("Please enter a lower amount that you can afford: ");
                 raiseAmount = scan.nextDouble();
+                }
             }
             System.out.println("You have successfully raised by another $" + raiseAmount);
             betAmount += raiseAmount;
@@ -304,44 +313,44 @@ public class Casino {
         switch (result.toLowerCase()) {
             case "onepair":
                 System.out.println("You got a One Pair! Thats a 1.5x multiplier win! GG!");
-                win(1.5, betAmount, wallet, bank);
+                win(1.5, betAmount, wallet, bank, betFromBank);
                 break;
             case "twopair":
                 System.out.println("You got a Two Pair! Thats a 2x multiplier win! GG!");
-                win(2, betAmount, wallet, bank);
+                win(2, betAmount, wallet, bank, betFromBank);
                 break;
             case "threeofakind":
                 System.out.println("You got a Three of a Kind! Thats a 3x multiplier win! GG!");
-                win(3, betAmount, wallet, bank);
+                win(3, betAmount, wallet, bank, betFromBank);
                 break;
             case "fourofakind":
                 System.out.println("You got a FOUR OF A KIND!! Thats a WHOPPING 10x multiplier win! GG!");
-                win(10, betAmount, wallet, bank);
+                win(10, betAmount, wallet, bank, betFromBank);
                 break;
             case "straight":
                 System.out.println("You got a Straight! Thats a 3.5x multiplier win! GG!");
-                win(3.5, betAmount, wallet, bank);
+                win(3.5, betAmount, wallet, bank, betFromBank);
                 break;
             case "flush":
                 System.out.println("You got a Flush! Thats a 3.5x multiplier win! GG!");
-                win(3.5, betAmount, wallet, bank);
+                win(3.5, betAmount, wallet, bank, betFromBank);
                 break;
             case "straightflush":
                 System.out.println("You got a STRAIGHT FLUSH! WOW! Thats a HUGE 25x MULTIPLIER WIN! GG!");
-                win(25, betAmount, wallet, bank);
+                win(25, betAmount, wallet, bank, betFromBank);
                 break;
             case "fullhouse":
                 System.out.println("You got a FULL HOUSE! Thats a 5x multiplier win!");
-                win(5, betAmount, wallet, bank);
+                win(5, betAmount, wallet, bank, betFromBank);
                 break;
             case "royalflush":
                 System.out.println(
                         "WOW!!! YOU GOT A ROYAL FLUSH!!! GG!!!!!!!!!! THATS AN INSANE 10000x WIN! CONGRATULATIONS!");
-                win(10000, betAmount, wallet, bank);
+                win(10000, betAmount, wallet, bank, betFromBank);
                 break;
             default:
                 System.out.println("You got nothing but a high card. Better luck next time");
-                win(0, betAmount, wallet, bank);
+                win(0, betAmount, wallet, bank, betFromBank);
                 break;
         }
         // do calculations
@@ -565,41 +574,54 @@ public class Casino {
             }
         }
 
-        if (pc1Num - numsInRow == pc2Num) {
-            // before increment check if pc1Num PLUS 1 is on the board
-            int temp = numsInRow;
-            for (int i = 0; i < 5; i++) {
-                if (pc1Num + numsInRow == getCardNum(pot.get(i))) {
-                    numsInRow++;
-                    break;
+        int offsetP = 1;
+        int offsetN = 1;
+        int numbersInRow = 1;
+        int counter = -1;
+        for(int i = 0; i < 7; i++){
+                if(i == 5) counter = pc1Num;
+                else if(i == 6) counter = pc2Num;
+                else counter = getCardNum(pot.get(i));
+            for(int j = 0; j < 7; j++){
+                if(j == 5){
+                    if(counter - offsetN == pc1Num){
+                        offsetN++;
+                        numbersInRow++;
+                    }
+                    else if(counter + offsetP == pc1Num){
+                        offsetP++;
+                        numbersInRow++;
+                    }
                 }
-            }
-            if (temp == numsInRow) {
-                numsInRow++;
-            }
-        }
-        if (pc1Num + numsInRow == pc2Num) {
-            int temp = numsInRow;
-            for (int i = 0; i < 5; i++) {
-                if (pc1Num - numsInRow == getCardNum(pot.get(i))) {
-                    numsInRow++;
-                    break;
+                else if(j == 6){
+                    if(counter - offsetN == pc2Num){
+                        offsetN++;
+                        numbersInRow++;
+                    }
+                    else if(counter + offsetP == pc2Num){
+                        offsetP++;
+                        numbersInRow++;
+                    }
                 }
+                else{
+                    if(counter - offsetN == getCardNum(pot.get(j))){
+                        offsetN++;
+                        numbersInRow++;
+                    }
+                    else if(counter + offsetP == getCardNum(pot.get(j))){
+                        offsetP++;
+                        numbersInRow++;
+                    }
+                }
+            }   
+            if(numbersInRow >= 5){
+                result = "Straight";
             }
-            if (temp == numsInRow) {
-                numsInRow++;
+            else{
+                numbersInRow = 1;
             }
         }
-        for (int i = 0; i < 5; i++) {
-            if (pc1Num - numsInRow == getCardNum(pot.get(i))) {
-                numsInRow++;
-            } else if (pc1Num - numsInRow == getCardNum(pot.get(i))) {
-                numsInRow++;
-            }
-        }
-        if (numsInRow >= 5) {
-            result = "Straight";
-        }
+
         // #endregion check_straight
         // #region check_flush
 
@@ -638,7 +660,7 @@ public class Casino {
             }
         }
         // #endregion check_straightFlush
-        //#region check_royalFlush
+        // #region check_royalFlush
         HashMap<Integer, Boolean> isRoyalFlush = new HashMap<Integer, Boolean>();
         String suit = "";
         isRoyalFlush.put(1, false);
@@ -646,50 +668,56 @@ public class Casino {
         isRoyalFlush.put(11, false);
         isRoyalFlush.put(12, false);
         isRoyalFlush.put(13, false);
-        
-        if(pc1Num == 10 || pc1Num == 11 || pc1Num == 12 || pc1Num == 13 || pc1Num == 1){
+
+        if (pc1Num == 10 || pc1Num == 11 || pc1Num == 12 || pc1Num == 13 || pc1Num == 1) {
             suit = getCardSuit(pc1);
-            for(int i = 0; i < 5; i++){
+            for (int i = 0; i < 5; i++) {
                 int num = getCardNum(pot.get(i));
-                if(num == 10 || num == 11 || num == 12 || num == 13 || num == 1){
+                if (num == 10 || num == 11 || num == 12 || num == 13 || num == 1) {
                     isRoyalFlush.put(num, true);
                 }
             }
         }
-        if(pc2Num == 10 || pc2Num == 11 || pc2Num == 12 || pc2Num == 13 || pc2Num == 1){
+        if (pc2Num == 10 || pc2Num == 11 || pc2Num == 12 || pc2Num == 13 || pc2Num == 1) {
             suit = getCardName(pc2);
-            for(int i = 0; i < 5; i++){
+            for (int i = 0; i < 5; i++) {
                 int num = getCardNum(pot.get(i));
-                if(num == 10 || num == 11 || num == 12 || num == 13 || num == 1){
+                if (num == 10 || num == 11 || num == 12 || num == 13 || num == 1) {
                     isRoyalFlush.put(num, true);
                 }
             }
         }
         boolean royalFlush = false;
-        if(isRoyalFlush.get(1) && isRoyalFlush.get(10) && isRoyalFlush.get(11) && isRoyalFlush.get(12) && isRoyalFlush.get(13)){
-            //check if all suits are the same
+        if (isRoyalFlush.get(1) && isRoyalFlush.get(10) && isRoyalFlush.get(11) && isRoyalFlush.get(12)
+                && isRoyalFlush.get(13)) {
+            // check if all suits are the same
             royalFlush = true;
-            for(int i = 0; i < 5; i++){
-                if(!getCardSuit(pot.get(i)).equals(suit)){
+            for (int i = 0; i < 5; i++) {
+                if (!getCardSuit(pot.get(i)).equals(suit)) {
                     royalFlush = false;
                 }
             }
         }
-        if(royalFlush){
+        if (royalFlush) {
             result = "RoyalFlush";
         }
-        //#endregion check_royalFlush
+        // #endregion check_royalFlush
         System.out.println((pairSet.get(pc1Num) + pairSet.get(pc2Num)) + " pairs");
         return result;
     }
 
-    void win(double multiplier, double bet, Wallet wallet, Bank bank) {
+    void win(double multiplier, double bet, Wallet wallet, Bank bank, boolean fromBank) {
         if (multiplier != 0) {
             double winnings = bet * multiplier;
-            wallet.addBalance(winnings - bet);
-        }
-        else{
-            wallet.addBalance(-bet);
+            if (!fromBank)
+                wallet.addBalance(winnings - bet);
+            else
+                bank.addBalance(winnings - bet);
+        } else {
+            if (!fromBank)
+                wallet.addBalance(-bet);
+            else
+                bank.addBalance(-bet);
         }
         System.out.println("You now have a wallet balance of: $" + wallet.getBalance() + " and a balance of $"
                 + bank.getBalance() + " in your bank account.");

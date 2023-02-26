@@ -101,15 +101,19 @@ public class Main {
         switch (storedData.job) {
             case 1:
                 job = Job.NOJOB;
+                playerBank.setSalary(0);
                 break;
                 case 2:
                 job = Job.DOCTOR;
+                playerBank.setSalary(5000);
                 break;
                 case 3:
                 job = Job.SALESASSOCIATE;
+                playerBank.setSalary(1000);
                 break;
                 case 4:
                 job = Job.SCIENTIST;
+                playerBank.setSalary(2500);
                 break;
             default:
                 break;
@@ -179,6 +183,7 @@ public class Main {
                     println("Time to go to work!");
                     waitForSeconds(1000);
                     GoToJob(job, currentJobQuestions.get(job), playerBank, playerWallet);
+                    break;
                 default:
                     // skip job, go casino or wtv is after
                     println("Since it's a " + getDay(day) + ", you don't need to work! Hooray!");
@@ -412,10 +417,8 @@ public class Main {
         }
         while (dataScanner.hasNext()) {
             String nextLine = dataScanner.nextLine();
-            println(attribute);
             if (nextLine.contains(attribute)) {
                 value = Double.parseDouble(nextLine.substring(nextLine.indexOf("=") + 1));
-                println(value + " VALUE");
                 return value;
             }
         }
