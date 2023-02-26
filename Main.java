@@ -1,7 +1,5 @@
 import java.io.*;
-import java.io.PrintWriter;
 import java.util.*;
-import java.util.HashMap;
 
 //add days:
 //  Certain number of actions per day
@@ -15,19 +13,21 @@ import java.util.HashMap;
 //  when done gambling:
 //      
 enum Job {
-    NoJob(1), // difficulty: 0
-    Doctor(2), // difficulty: 50
-    SalesAssociate(3), // difficulty: 10
-    Scientist(4); // difficulty: 25
+    NOJOB(1), // difficulty: 0
+    DOCTOR(2), // difficulty: 50
+    SALESASSOCIATE(3), // difficulty: 10
+    SCIENTIST(4); // difficulty: 25
 
-    final int IDENTIFIER;
+    int identifier;
 
     Job(int i){
-        IDENTIFIER = i;
+        identifier = i;
     }
 }
 
 public class Main {
+
+    static final String DATA_PATH = "./JavaCasino/data.txt";
     public static void main(String[] args) throws IOException, InterruptedException {
         Scanner kb = new Scanner(System.in);
         double deposit;
@@ -46,12 +46,23 @@ public class Main {
         // only Sales Associates could answer in 4 answer multiple choice format
         // ask chatgpt Give me a list of 20 questions of moderate difficulty that only
         // doctors could answer in 4 answer multiple choice format
-        Job job = Job.NoJob;
+        Job job = Job.NOJOB;
         Bank playerBank = new Bank(0, 0);
         Wallet playerWallet;
         Casino casino = new Casino();
         Random r = new Random();
-        FileInputStream data = new FileInputStream("./JavaCasino/data.txt");
+        FileInputStream data;
+        try{
+            data = new FileInputStream(DATA_PATH);
+        }
+        catch(FileNotFoundException e){
+            File newFile = new File(DATA_PATH);
+            if(newFile.createNewFile())
+                data = new FileInputStream(newFile);
+            else{
+                data = null;
+            }
+        }
         Data storedData = loadData(data);
 
 
@@ -60,24 +71,20 @@ public class Main {
         // fill all jobs
         fillScientistQuestions(scientistQuestions);
         // fill currentJobQuestions
-        currentJobQuestions.put(Job.Doctor, doctorQuestions);
-        currentJobQuestions.put(Job.Scientist, scientistQuestions);
-        currentJobQuestions.put(Job.SalesAssociate, salesQuestions);
-        // if no file exists
+        currentJobQuestions.put(Job.DOCTOR, doctorQuestions);
+        currentJobQuestions.put(Job.SCIENTIST, scientistQuestions);
+        currentJobQuestions.put(Job.SALESASSOCIATE, salesQuestions);
         if (data.available() <= 0) {
-            File newData = new File("./JavaCasino/data.txt");
+            File newData = new File(DATA_PATH);
             PrintWriter writeData = new PrintWriter(newData);
 
-            System.out.println("file not exist yet");
-            // maybe more later for now this is it
-
-            System.out.println("Welcome to the Java Gambling simulator!");
+            println("Welcome to the Java Gambling simulator!");
             waitForSeconds(2000);
-            System.out.print("Enter amount for deposit: ");
+            print("Enter amount for deposit: ");
             deposit = kb.nextDouble();
             do {
                 if (deposit < 100 || deposit > 10000) {
-                    System.out.println("Please enter a valid deposit: (100-10000)");
+                    println("Please enter a valid deposit: (100-10000)");
                     deposit = kb.nextDouble();
                 }
             } while (deposit < 100 || deposit > 10000);
@@ -88,23 +95,21 @@ public class Main {
             writeData.println("JOB=0");
             writeData.close();
         } else {
-            System.out.println("file exist already");
-            playerWallet = new Wallet(0);
         //#region assignData
 
         day = storedData.day;
         switch (storedData.job) {
             case 1:
-                job = Job.NoJob;
+                job = Job.NOJOB;
                 break;
                 case 2:
-                job = Job.Doctor;
+                job = Job.DOCTOR;
                 break;
                 case 3:
-                job = Job.SalesAssociate;
+                job = Job.SALESASSOCIATE;
                 break;
                 case 4:
-                job = Job.Scientist;
+                job = Job.SCIENTIST;
                 break;
             default:
                 break;
@@ -113,20 +118,20 @@ public class Main {
         playerBank.setBalance(storedData.bankBalance);
 
         //#endregion assignData
-            System.out.println("You have $" + playerBank.getBalance() + " in your bank account, and $"
+            println("You have $" + playerBank.getBalance() + " in your bank account, and $"
                     + playerWallet.getBalance() + " in your wallet");
         }
         while (day < 21) {
             waitForSeconds(1000);
-            System.out.println("Day " + day + ", a " + getDay(day) + " morning . . .");
+            println("Day " + day + ", a " + getDay(day) + " morning . . .");
             for (int i = 0; i < 5; i++) {
                 waitForSeconds(1000);
-                System.out.println("-----");
+                println("-----");
             }
-            if (job == Job.NoJob) {
-                System.out.println("Oh no! It looks like you don't have a job! Try picking one now: ");
+            if (job == Job.NOJOB) {
+                println("Oh no! It looks like you don't have a job! Try picking one now: ");
                 waitForSeconds(1000);
-                System.out.println(
+                println(
                         "Pick a job you would like to do: \n1. Doctor\n2. Sales Associate\n3. Scientist\nPlease enter a number for the corresponding job:");
                 int val = kb.nextInt();
 
@@ -136,21 +141,21 @@ public class Main {
                 }
                 switch (val) {
                     case 1:
-                        job = Job.Doctor;
+                        job = Job.DOCTOR;
                         System.out
                                 .println("Congratulations on your new job as a Doctor! Your job difficulty is 50/100!");
                         waitForSeconds(1000);
                         playerBank.setSalary(5000);
                         break;
                     case 2:
-                        job = Job.SalesAssociate;
-                        System.out.println(
+                        job = Job.SALESASSOCIATE;
+                        println(
                                 "Congratulations on your new job as a Sales Associate! Your job difficulty is 10/100!");
                         waitForSeconds(1000);
                         playerBank.setSalary(1000);
                         break;
                     case 3:
-                        job = Job.Scientist;
+                        job = Job.SCIENTIST;
                         System.out
                                 .println(
                                         "Congratulations on your new job as a Scientist! Your job difficulty is 25/100!");
@@ -158,57 +163,57 @@ public class Main {
                         playerBank.setSalary(2500);
                         break;
                     default:
-                        job = Job.NoJob;
+                        job = Job.NOJOB;
                         break;
                 }
             }
 
             int rand = r.nextInt(morningSentencePool.length);
-            System.out.println(morningSentencePool[rand]);
+            println(morningSentencePool[rand]);
             switch (getDay(day)) {
                 case "Monday":
                 case "Tuesday":
                 case "Wednesday":
                 case "Thursday":
                 case "Friday":
-                    System.out.println("Time to go to work!");
+                    println("Time to go to work!");
                     waitForSeconds(1000);
                     GoToJob(job, currentJobQuestions.get(job), playerBank, playerWallet);
                 default:
                     // skip job, go casino or wtv is after
-                    System.out.println("Since it's a " + getDay(day) + ", you don't need to work! Hooray!");
+                    println("Since it's a " + getDay(day) + ", you don't need to work! Hooray!");
                     waitForSeconds(2000);
-                    System.out.println("What would you like to do instead?");
+                    println("What would you like to do instead?");
                     waitForSeconds(1000);
                     // stuff to do idk yet
                     // maybe freelance,
             }
 
-            System.out.println("It's time for your daily gambling session!");
+            println("It's time for your daily gambling session!");
             // in casino
             casino.inputGame(playerBank, playerWallet);
 
             // bank trip
-            System.out.println("You decide to go to the bank.");
+            println("You decide to go to the bank.");
             waitForSeconds(1000);
-            System.out.println("Would you like to: \n1. Withdraw\n2. Deposit\n3. Leave");
+            println("Would you like to: \n1. Withdraw\n2. Deposit\n3. Leave");
             int ans = kb.nextInt();
             while (ans != 1 && ans != 2 && ans != 3) {
                 System.out.print("choose a valid option: ");
                 ans = kb.nextInt();
             }
             double next;
-            System.out.println(
+            println(
                     "Current balances: \nBank: $" + playerBank.getBalance() + "\nWallet: $"
                             + playerWallet.getBalance());
             switch (ans) {
                 case 1:
                     waitForSeconds(1000);
-                    System.out.println("How much would you like to withdraw?");
+                    println("How much would you like to withdraw?");
                     next = kb.nextDouble();
                     // input validation etc then display balances
                     while (next > playerBank.getBalance() || next <= 0) {
-                        System.out.println(
+                        println(
                                 "Enter a valid amount (min 0.01)\nYou have $" + playerBank.getBalance() + ": ");
                         next = kb.nextDouble();
                     }
@@ -216,7 +221,7 @@ public class Main {
                     break;
                 case 2:
                     waitForSeconds(1000);
-                    System.out.println("How much would you like to deposit?");
+                    println("How much would you like to deposit?");
                     next = kb.nextDouble();
                     while (next > playerWallet.getBalance() || next <= 0) {
                         System.out
@@ -228,13 +233,13 @@ public class Main {
                     break;
                 case 3:
                     waitForSeconds(1000);
-                    System.out.println("Ok! Time to go home and go to bed.");
+                    println("Ok! Time to go home and go to bed.");
                     break;
             }
             day++;
             playerBank.interestPerDay();
-            saveData(playerWallet, playerBank, day, job.IDENTIFIER);
-            System.out.println("Progress Saved!");
+            saveData(playerWallet, playerBank, day, job.identifier);
+            println("Progress Saved!");
         }
         kb.close();
 
@@ -245,23 +250,23 @@ public class Main {
         Scanner scan = new Scanner(System.in);
         int rand = r.nextInt(questionList.size());
         for (int i = 0; i < questionList.get(rand).length - 1; i++) {
-            System.out.println(questionList.get(rand)[i]);
+            println(questionList.get(rand)[i]);
             waitForSeconds(1000);
         }
         System.out.print("Please enter the corresponding answer: ");
         int guess = scan.nextInt();
         if (checkAnswer(guess, questionList.get(rand)[questionList.get(rand).length - 1])) {
             playerBank.addBalance(playerBank.getSalary());
-            System.out.println(
+            println(
                     "Correct! Your salary for today has been paid!\n+$" + playerBank.getSalary() + " dollars!");
             waitForSeconds(2500);
-            System.out.println("Your new bank balance is: $" + playerBank.getBalance() + " and you have $"
+            println("Your new bank balance is: $" + playerBank.getBalance() + " and you have $"
                     + playerWallet.getBalance() + " on hand");
             waitForSeconds(2500);
         } else {
-            System.out.println("OOPS! Wrong answer.");
+            println("OOPS! Wrong answer.");
             waitForSeconds(2500);
-            System.out.println("Your bank balance is: $" + playerBank.getBalance() + " and you have $"
+            println("Your bank balance is: $" + playerBank.getBalance() + " and you have $"
                     + playerWallet.getBalance() + " on hand");
             waitForSeconds(2500);
         }
@@ -347,13 +352,21 @@ public class Main {
         try {
             Thread.sleep(milliseconds);
         } catch (InterruptedException e) {
-            System.out.println("IException");
+            println("IException");
         }
     }
 
+    /**
+     * SAVES DATA TO A TEXT FILE
+     * @param wallet wallet balance to save
+     * @param bank bank balance to save
+     * @param day day to save
+     * @param job job to save
+     * @throws IOException dealing with files
+     */
     static void saveData(Wallet wallet, Bank bank, int day, int job) throws IOException
     {
-        File newData = new File("./JavaCasino/data.txt");
+        File newData = new File(DATA_PATH);
         PrintWriter writeData = new PrintWriter(newData);
 
         writeData.println("BANK=" + bank.getBalance());
@@ -364,6 +377,12 @@ public class Main {
 
     }
 
+    /**
+     * LOADS THE DATA FROM THE TEXT FILEthat references the save File
+     * @param data the FileInputStream 
+     * @return returns a Data object with the retrieved values
+     * @throws IOException dealing with files
+     */
     static Data loadData(FileInputStream data) throws IOException {
 
         int day = (int) getDataLine(data, "DAY");
@@ -384,22 +403,37 @@ public class Main {
      *                  "BANK", WALLET
      */
     static double getDataLine(FileInputStream data, String attribute) throws IOException {
-        data = new FileInputStream("./JavaCasino/data.txt");
+        data = new FileInputStream(DATA_PATH);
         Scanner dataScanner = new Scanner(data);
         double value = 0.0;
         if (!attribute.equals("DAY") && !attribute.equals("BANK") && !attribute.equals("WALLET") && !attribute.equals("JOB")) {
-            System.out.println("ERROR");
+            println("ERROR");
             System.exit(404);
         }
         while (dataScanner.hasNext()) {
             String nextLine = dataScanner.nextLine();
-            System.out.println(attribute);
+            println(attribute);
             if (nextLine.contains(attribute)) {
                 value = Double.parseDouble(nextLine.substring(nextLine.indexOf("=") + 1));
-                System.out.println(value + " VALUE");
+                println(value + " VALUE");
                 return value;
             }
         }
+        dataScanner.close();
         return value;
+    }
+    /**
+     * the only purpose of this method is to get rid of the annoying errors
+     * @param literal string to print
+     */
+    static void print(String literal){
+        System.out.print(literal);
+    }
+        /**
+     * the only purpose of this method is to get rid of the annoying errors
+     * @param literal string to print
+     */
+    static void println(String literal){
+        System.out.println(literal);
     }
 }
