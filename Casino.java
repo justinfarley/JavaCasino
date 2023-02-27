@@ -616,9 +616,12 @@ public class Casino {
             }   
             if(numbersInRow >= 5){
                 result = "Straight";
+                break;
             }
             else{
                 numbersInRow = 1;
+                offsetN = 1;
+                offsetP = 1;
             }
         }
 
