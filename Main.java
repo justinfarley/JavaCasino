@@ -13,24 +13,28 @@ import java.util.*;
 //  when done gambling:
 //      
 enum Job {
-    NOJOB(1), // difficulty: 0
-    DOCTOR(2), // difficulty: 50
-    SALESASSOCIATE(3), // difficulty: 10
-    SCIENTIST(4); // difficulty: 25
+    NOJOB(1, 0), // difficulty: 0
+    DOCTOR(2, 5000), // difficulty: 50
+    SALESASSOCIATE(3, 1000), // difficulty: 10
+    SCIENTIST(4, 2500); // difficulty: 25
 
     int identifier;
+    double salary;
 
-    Job(int i){
+    Job(int i, double s) {
         identifier = i;
+        salary = s;
     }
 }
 
 public class Main {
 
     static final String DATA_PATH = "./JavaCasino/data.txt";
+
     public static void main(String[] args) throws IOException, InterruptedException {
         Scanner kb = new Scanner(System.in);
         double deposit;
+        int currentDay = 1;
         int day = 1;
         String[] morningSentencePool = { "What a beautiful morning! Time to put on a smile!", "", "" };
         HashMap<Integer, String[]> scientistQuestions = new HashMap<Integer, String[]>(); // String array is the
@@ -52,20 +56,17 @@ public class Main {
         Casino casino = new Casino();
         Random r = new Random();
         FileInputStream data;
-        try{
+        try {
             data = new FileInputStream(DATA_PATH);
-        }
-        catch(FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             File newFile = new File(DATA_PATH);
-            if(newFile.createNewFile())
+            if (newFile.createNewFile())
                 data = new FileInputStream(newFile);
-            else{
+            else {
                 data = null;
             }
         }
         Data storedData = loadData(data);
-
-
 
         // initialization
         // fill all jobs
@@ -93,41 +94,40 @@ public class Main {
             writeData.println("WALLET=0");
             writeData.println("DAY=1");
             writeData.println("JOB=0");
+            writeData.println("CURRENTDAY=1");
             writeData.close();
         } else {
-        //#region assignData
+            // #region assignData
 
-        day = storedData.day;
-        switch (storedData.job) {
-            case 1:
-                job = Job.NOJOB;
-                playerBank.setSalary(0);
-                break;
+            currentDay = storedData.day;
+            switch (storedData.job) {
+                case 1:
+                    job = Job.NOJOB;
+                    break;
                 case 2:
-                job = Job.DOCTOR;
-                playerBank.setSalary(5000);
-                break;
+                    job = Job.DOCTOR;
+                    break;
                 case 3:
-                job = Job.SALESASSOCIATE;
-                playerBank.setSalary(1000);
-                break;
+                    job = Job.SALESASSOCIATE;
+                    break;
                 case 4:
-                job = Job.SCIENTIST;
-                playerBank.setSalary(2500);
-                break;
-            default:
-                break;
-        }
-        playerWallet = new Wallet(storedData.walletBalance);
-        playerBank.setBalance(storedData.bankBalance);
-
-        //#endregion assignData
+                    job = Job.SCIENTIST;
+                    break;
+                default:
+                    break;
+            }
+            playerBank.setSalary(job.salary);
+            playerWallet = new Wallet(storedData.walletBalance);
+            playerBank.setBalance(storedData.bankBalance);
+            day = storedData.day;
+            currentDay = storedData.currentDay;
+            // #endregion assignData
             println("You have $" + playerBank.getBalance() + " in your bank account, and $"
                     + playerWallet.getBalance() + " in your wallet");
         }
-        while (day < 21) {
+        while (currentDay < 21) {
             waitForSeconds(1000);
-            println("Day " + day + ", a " + getDay(day) + " morning . . .");
+            println("Day " + day + ", a " + getDay(currentDay) + " morning . . .");
             for (int i = 0; i < 5; i++) {
                 waitForSeconds(1000);
                 println("-----");
@@ -174,7 +174,7 @@ public class Main {
 
             int rand = r.nextInt(morningSentencePool.length);
             println(morningSentencePool[rand]);
-            switch (getDay(day)) {
+            switch (getDay(currentDay)) {
                 case "Monday":
                 case "Tuesday":
                 case "Wednesday":
@@ -186,7 +186,7 @@ public class Main {
                     break;
                 default:
                     // skip job, go casino or wtv is after
-                    println("Since it's a " + getDay(day) + ", you don't need to work! Hooray!");
+                    println("Since it's a " + getDay(currentDay) + ", you don't need to work! Hooray!");
                     waitForSeconds(2000);
                     println("What would you like to do instead?");
                     waitForSeconds(1000);
@@ -241,9 +241,14 @@ public class Main {
                     println("Ok! Time to go home and go to bed.");
                     break;
             }
+            if (currentDay == 7) {
+                currentDay = 1;
+            } else {
+                currentDay++;
+            }
             day++;
             playerBank.interestPerDay();
-            saveData(playerWallet, playerBank, day, job.identifier);
+            saveData(playerWallet, playerBank, currentDay, job.identifier);
             println("Progress Saved!");
         }
         kb.close();
@@ -278,19 +283,19 @@ public class Main {
     }
 
     static String getDay(int day) {
-        if (day % 7 == 0) {
+        if (day == 7) {
             return "Saturday";
-        } else if (day % 6 == 0) {
+        } else if (day == 6) {
             return "Friday";
-        } else if (day % 5 == 0) {
+        } else if (day == 5) {
             return "Thursday";
-        } else if (day % 4 == 0) {
+        } else if (day == 4) {
             return "Wednesday";
-        } else if (day % 3 == 0) {
+        } else if (day == 3) {
             return "Tuesday";
-        } else if (day % 2 == 0) {
+        } else if (day == 2) {
             return "Monday";
-        } else if (day % 1 == 0) {
+        } else if (day == 1) {
             return "Sunday";
         } else {
             return "ERROR";
@@ -363,14 +368,14 @@ public class Main {
 
     /**
      * SAVES DATA TO A TEXT FILE
+     * 
      * @param wallet wallet balance to save
-     * @param bank bank balance to save
-     * @param day day to save
-     * @param job job to save
+     * @param bank   bank balance to save
+     * @param day    day to save
+     * @param job    job to save
      * @throws IOException dealing with files
      */
-    static void saveData(Wallet wallet, Bank bank, int day, int job) throws IOException
-    {
+    static void saveData(Wallet wallet, Bank bank, int day, int job) throws IOException {
         File newData = new File(DATA_PATH);
         PrintWriter writeData = new PrintWriter(newData);
 
@@ -384,18 +389,20 @@ public class Main {
 
     /**
      * LOADS THE DATA FROM THE TEXT FILEthat references the save File
-     * @param data the FileInputStream 
+     * 
+     * @param data the FileInputStream
      * @return returns a Data object with the retrieved values
      * @throws IOException dealing with files
      */
     static Data loadData(FileInputStream data) throws IOException {
 
         int day = (int) getDataLine(data, "DAY");
-        int job = (int)getDataLine(data, "JOB");
+        int curDay = (int) getDataLine(data, "CURRENTDAY");
+        int job = (int) getDataLine(data, "JOB");
         double walletBal = getDataLine(data, "WALLET");
         double bankBal = getDataLine(data, "BANK");
-        
-        return new Data(day, walletBal, bankBal, job);
+
+        return new Data(day, walletBal, bankBal, job, curDay);
 
     }
 
@@ -405,13 +412,14 @@ public class Main {
      * 
      * @param data      the file where data is saved
      * @param attribute the attribute of the data to get. Attributes include: "DAY",
-     *                  "BANK", WALLET
+     *                  "BANK", WALLET, and more
      */
     static double getDataLine(FileInputStream data, String attribute) throws IOException {
         data = new FileInputStream(DATA_PATH);
         Scanner dataScanner = new Scanner(data);
         double value = 0.0;
-        if (!attribute.equals("DAY") && !attribute.equals("BANK") && !attribute.equals("WALLET") && !attribute.equals("JOB")) {
+        if (!attribute.equals("DAY") && !attribute.equals("BANK") && !attribute.equals("WALLET") && !attribute.equals("CURRENTDAY")
+                && !attribute.equals("JOB")) {
             println("ERROR");
             System.exit(404);
         }
@@ -425,18 +433,22 @@ public class Main {
         dataScanner.close();
         return value;
     }
+
     /**
      * the only purpose of this method is to get rid of the annoying errors
+     * 
      * @param literal string to print
      */
-    static void print(String literal){
+    static void print(String literal) {
         System.out.print(literal);
     }
-        /**
+
+    /**
      * the only purpose of this method is to get rid of the annoying errors
+     * 
      * @param literal string to print
      */
-    static void println(String literal){
+    static void println(String literal) {
         System.out.println(literal);
     }
 }
