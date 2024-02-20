@@ -55,16 +55,16 @@ public class Main {
         Wallet playerWallet;
         Casino casino = new Casino();
         Random r = new Random();
-        FileInputStream data;
-        try {
-            data = new FileInputStream(DATA_PATH);
-        } catch (FileNotFoundException e) {
-            File newFile = new File(DATA_PATH);
-            if (newFile.createNewFile())
-                data = new FileInputStream(newFile);
-            else {
-                data = null;
-            }
+        // FileInputStream data;
+        // try {
+        //     data = new FileInputStream(DATA_PATH);
+        // } catch (FileNotFoundException e) {
+        //     File newFile = new File(DATA_PATH);
+        //     if (newFile.createNewFile())
+        //         data = new FileInputStream(newFile);
+        //     else {
+        //         data = null;
+        //     }
         }
         Data storedData = loadData(data);
 
